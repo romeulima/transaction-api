@@ -1,4 +1,4 @@
-package br.com.picpay.feign;
+package br.com.picpay.dtos.feign;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
