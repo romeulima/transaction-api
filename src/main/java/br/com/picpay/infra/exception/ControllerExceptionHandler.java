@@ -1,7 +1,8 @@
 package br.com.picpay.infra.exception;
 
+import br.com.picpay.domain.transaction.exceptions.PicPayServerErrorException;
 import br.com.picpay.domain.user.exceptions.UserWithoutAuthorizationException;
-import br.com.picpay.dtos.errors.ErrorDTO;
+import br.com.picpay.dtos.geral.ErrorDTO;
 import feign.FeignException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,12 +24,12 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorDTO("Usuario ja cadastrado", "400"));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDTO> handleException(Exception e){
+    @ExceptionHandler(PicPayServerErrorException.class)
+    public ResponseEntity<ErrorDTO> handleException(PicPayServerErrorException e){
         return ResponseEntity.internalServerError().body(new ErrorDTO(e.getMessage(), "500"));
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(UserWithoutAuthorizationException.class)
     public ResponseEntity<ErrorDTO> handleUserWithoutAuthorizationException(UserWithoutAuthorizationException e){
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorDTO(e.getMessage(), "403"));
     }
