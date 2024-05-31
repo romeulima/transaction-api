@@ -1,5 +1,6 @@
 package br.com.picpay.feign;
 
+import br.com.picpay.dtos.feign.AuthResponseFeignDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
