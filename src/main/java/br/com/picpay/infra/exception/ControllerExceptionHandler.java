@@ -1,6 +1,6 @@
 package br.com.picpay.infra.exception;
 
-import br.com.picpay.domain.transaction.exceptions.PicPayServerErrorException;
+import br.com.picpay.domain.transaction.exceptions.PicPayNotAllowedTransactionException;
 import br.com.picpay.domain.user.exceptions.UserWithoutAuthorizationException;
 import br.com.picpay.dtos.geral.ErrorDTO;
 import feign.FeignException;
@@ -24,8 +24,8 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorDTO("Usuario ja cadastrado", "400"));
     }
 
-    @ExceptionHandler(PicPayServerErrorException.class)
-    public ResponseEntity<ErrorDTO> handleException(PicPayServerErrorException e){
+    @ExceptionHandler(PicPayNotAllowedTransactionException.class)
+    public ResponseEntity<ErrorDTO> handleException(PicPayNotAllowedTransactionException e){
         return ResponseEntity.internalServerError().body(new ErrorDTO(e.getMessage(), "500"));
     }
 
