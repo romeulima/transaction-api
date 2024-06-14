@@ -1,9 +1,9 @@
 package br.com.picpay.services;
 
+import br.com.picpay.domain.transaction.exceptions.EmailSenderFailureException;
 import br.com.picpay.dtos.feign.EmailRequestDTO;
 import br.com.picpay.feign.EmailClient;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -12,11 +12,14 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class EmailService {
 
-    @Autowired
     private final EmailClient emailClient;
 
     public void sendEmail(EmailRequestDTO dto) {
-        this.emailClient.sendEmail(dto);
+        try {
+            this.emailClient.sendEmail(dto);
+        } catch (Exception e) {
+            throw new EmailSenderFailureException("Error on email service");
+        }
     }
 
     public String generateMessage(String payer, BigDecimal value) {

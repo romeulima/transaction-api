@@ -5,10 +5,11 @@ import br.com.picpay.domain.user.UserType;
 import br.com.picpay.domain.user.exceptions.NoBalanceException;
 import br.com.picpay.domain.user.exceptions.UserWithoutAuthorizationException;
 import br.com.picpay.dtos.user.UserRequestDTO;
+import br.com.picpay.dtos.user.UserResponseDTO;
 import br.com.picpay.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,16 +19,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
     private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     public void validateTransaction(User payer, BigDecimal value){
         if (payer.getUserType() == UserType.MERCHANT) {
-            throw new UserWithoutAuthorizationException("Lojistas nao podem enviar dinheiro");
+            throw new UserWithoutAuthorizationException("Merchants cannot send money");
         }
 
         if (payer.getBalance().compareTo(value) < 0) {
-            throw new NoBalanceException("Saldo  insuficiente");
+            throw new NoBalanceException("No balance available");
         }
     }
 
@@ -35,17 +37,24 @@ public class UserService {
         return this.userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuario nao encontrado"));
     }
 
-    public User createUser(UserRequestDTO userRequestDTO) {
+    public UserResponseDTO createUser(UserRequestDTO userRequestDTO) {
         User user = new User(userRequestDTO);
+
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+
         this.saveUser(user);
-        return user;
+
+        return new UserResponseDTO(user.getId(), user.getFullName(), user.getEmail(), user.getBalance(), user.getUserType());
     }
 
     public void saveUser(User user) {
         this.userRepository.save(user);
     }
 
-    public List<User> getAllUsers() {
-        return this.userRepository.findAll();
+    public List<UserResponseDTO> getAllUsers() {
+        List<User> users = this.userRepository.findAll();
+
+        return users.stream().map(user -> new UserResponseDTO(user.getId(), user.getFullName(), user.getEmail(), user.getBalance(), user.getUserType())).toList();
     }
 }

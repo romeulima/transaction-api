@@ -6,10 +6,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients
-public class PicpaytestApplication {
+public class PicPayApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PicpaytestApplication.class, args);
+		SpringApplication.run(PicPayApplication.class, args);
 	}
-
 }
